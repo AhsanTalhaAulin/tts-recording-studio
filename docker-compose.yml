@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app/backend # Mount for hot-reloading of backend code
+      - ./data:/app/data       # Mount for persistent data storage
+    # The command is already defined in the Dockerfile, but can be overridden here if needed
+    # command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
