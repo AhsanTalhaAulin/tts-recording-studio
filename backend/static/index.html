@@ -938,9 +938,9 @@
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
                     analyser = audioContext.createAnalyser();
                     microphone = audioContext.createMediaStreamSource(audioStream);
-                    scriptProcessor = audioContext.createScriptProcessor(2048, 1, 1); // Buffer size, input channels, output channels
+                    scriptProcessor = audioContext.createScriptProcessor(1024, 1, 1); // Buffer size, input channels, output channels
 
-                    analyser.fftSize = 2048;
+                    analyser.fftSize = 1024;
                     const bufferLength = analyser.frequencyBinCount;
                     const dataArray = new Uint8Array(bufferLength);
 
@@ -1003,12 +1003,16 @@
                     clearTimeout(recordingTimeoutId);
                     hideElement(elements.recordingTimerDisplay);
 
-                    // Only close audio context/stream if no longer needed or explicitly stopped by user action
-                    // For re-record, we keep the stream active.
-                    // if (audioContext) audioContext.close();
-                    // if (audioStream) {
-                    //     audioStream.getTracks().forEach(track => track.stop());
-                    // }
+                    // Explicitly stop audio stream tracks and close audio context
+                    if (audioStream) {
+                        audioStream.getTracks().forEach(track => track.stop());
+                        audioStream = null; // Clear the stream reference
+                    }
+                    if (audioContext) {
+                        audioContext.close();
+                        audioContext = null; // Clear the context reference
+                    }
+
                     updateButtonStates('recorded');
                 };
 
