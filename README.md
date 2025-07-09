@@ -76,11 +76,7 @@ This project provides a web-based recording studio designed for collaboratively 
 
 ## Setup and Running
 
-### Prerequisites
 
-- [Docker Desktop](https://www.docker.com/products/docker-desktop) (includes Docker Engine and Docker Compose)
-
-### Steps
 
 1. __Clone the repository:__
 
@@ -110,7 +106,10 @@ This project provides a web-based recording studio designed for collaboratively 
 
 ## Usage
 
-1. __Upload JSON:__ Click the "Upload JSON" button and select a conversation JSON file. The JSON should be an array of objects, each with `speaker` and `text` fields:
+1. __Upload JSON:__ Click the "Upload JSON" button and select a conversation JSON file. There is a upload-sample.json file for quick use
+
+The JSON should be an array of objects, each with `speaker` and `text` fields:
+
 
    ```json
    [
@@ -170,15 +169,6 @@ The `backend/static/index.html` file contains the entire frontend. Key JavaScrip
 
 The `data/` directory is mounted as a Docker volume, ensuring that all recorded `.wav` files and `metadata.csv` files persist on your host machine even if the Docker containers are stopped or removed. This means your recorded datasets will not be lost.
 
-## Version Control (Git)
-
-This project uses Git for version control. Follow these best practices:
-
-- __Commit Frequently:__ Make small, atomic commits that represent a single logical change.
-- __Descriptive Commit Messages:__ Write clear and concise commit messages that explain *what* was changed and *why*.
-- __Branching:__ Use feature branches for new features or bug fixes to keep the `main` branch stable.
-- __Pull Requests:__ Submit pull requests for code review before merging into `main`.
-
 ## Contributing
 
-Feel free to fork the repository, open issues, or submit pull requests.
+Feel free to open issues, or submit pull requests.
