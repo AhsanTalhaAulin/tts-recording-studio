@@ -4,1236 +4,786 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TTS Dataset Recording Studio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Material UI Fonts and Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <!-- React and Material UI CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@mui/material@5.15.19/umd/material-ui.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@emotion/react@11.11.4/dist/emotion-react.umd.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@emotion/styled@11.11.0/dist/emotion-styled.umd.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        /* General styling */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
             margin: 0;
-            padding: 0; /* Remove padding from body as main-wrapper will handle it */
+            padding: 0;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+        }
+        #root {
             display: flex;
             justify-content: center;
             align-items: flex-start;
             min-height: 100vh;
-            box-sizing: border-box;
-        }
-
-        .main-wrapper {
-            width: 100%;
-            max-width: 1000px; /* Increased max-width to accommodate header elements */
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-            padding: 20px; /* Padding for the whole app */
-            box-sizing: border-box;
-        }
-
-        .app-header {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 20px 30px;
-            display: flex;
-            flex-wrap: wrap; /* Allow wrapping for responsiveness */
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px; /* Gap between header elements */
-        }
-
-        .header-title {
-            color: #1a202c;
-            font-size: 1.8em;
-            font-weight: 700;
-            margin: 0;
-            flex-grow: 1; /* Allows title to take available space */
-            text-align: left;
-        }
-
-        .header-dashboard {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
-            flex-grow: 2; /* Allows dashboard to take more space */
-        }
-
-        .dashboard-item {
-            background-color: #f7fafc;
-            border-radius: 6px;
-            padding: 8px 12px;
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            min-width: 100px;
-        }
-
-        .dashboard-item span {
-            display: block;
-            font-size: 0.8em;
-            color: #718096;
-            margin-bottom: 3px;
-        }
-
-        .dashboard-item strong {
-            font-size: 1.1em;
-            color: #2c5282;
-        }
-
-        .header-file-upload {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end; /* Align to top-right */
-            gap: 5px;
-        }
-
-        .header-upload-wrapper {
-            position: relative;
-            overflow: hidden;
-            display: inline-flex; /* Use inline-flex for button-like appearance */
-            align-items: center;
-            justify-content: center;
-            border: 1px solid #a0aec0;
-            background-color: #edf2f7;
-            border-radius: 8px;
-            padding: 8px 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap; /* Prevent text wrapping */
-        }
-
-        .header-upload-wrapper:hover {
-            border-color: #4299e1;
-            background-color: #ebf8ff;
-        }
-
-        .header-upload-wrapper input[type="file"] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            cursor: pointer;
-            width: 100%;
-            height: 100%;
-        }
-
-        .header-upload-wrapper .upload-icon {
-            font-size: 1.2em;
-            color: #4299e1;
-            margin-right: 8px;
-        }
-
-        .header-upload-wrapper .upload-text {
-            font-size: 0.9em;
-            color: #4a5568;
-            font-weight: 600;
-        }
-
-        .header-file-name {
-            font-size: 0.8em;
-            color: #718096;
-            text-align: right;
-            max-width: 150px; /* Limit width for long file names */
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .header-error {
-            font-size: 0.8em;
-            text-align: right;
-            width: 100%;
-        }
-
-        /* Main Container for Sections */
-        .container {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            width: 100%;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        /* Section styling */
-        .section {
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
             padding: 20px;
-            background-color: #fdfdfd;
-        }
-
-        .section-title {
-            font-size: 1.4em;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 15px;
-            border-bottom: 2px solid #edf2f7;
-            padding-bottom: 10px;
-        }
-
-        /* Recording Controls */
-        .recording-area {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .current-speaker {
-            font-size: 1.5em;
-            font-weight: 700;
-            color: #2b6cb0;
-            margin-bottom: 10px;
-            text-align: center;
-        }
-
-        .current-sentence {
-            font-size: 1.8em;
-            text-align: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #edf2f7;
-            border-radius: 8px;
-            border: 1px solid #e2e8f0;
-            line-height: 1.5;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            background-color: #e2e8f0;
-            border-radius: 10px;
-            height: 15px;
-            overflow: hidden;
-            margin-bottom: 15px;
-        }
-
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: #4299e1;
-            border-radius: 10px;
-            transition: width 0.3s ease-in-out;
-        }
-
-        .progress-text {
-            text-align: center;
-            font-size: 0.95em;
-            color: #4a5568;
-            margin-top: -10px; /* Adjust to place it closer to the bar */
-            margin-bottom: 15px;
-        }
-
-        .audio-visualizer {
-            width: 100%;
-            max-width: 600px;
-            height: 80px;
-            background-color: #e2e8f0;
-            border-radius: 8px;
-            border: 1px solid #cbd5e0;
-            margin-bottom: 10px; /* Reduced margin to fit timer */
-        }
-
-        .recording-timer {
-            font-size: 1.1em;
-            font-weight: 600;
-            color: #4a5568;
-            margin-bottom: 20px;
-        }
-
-        .control-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-            width: 100%;
-        }
-
-        .btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            min-width: 120px;
-        }
-
-        .btn-primary {
-            background-color: #4299e1;
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            background-color: #3182ce;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-secondary {
-            background-color: #cbd5e0;
-            color: #2d3748;
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background-color: #a0aec0;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-danger {
-            background-color: #e53e3e;
-            color: white;
-        }
-
-        .btn-danger:hover:not(:disabled) {
-            background-color: #c53030;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn-success {
-            background-color: #48bb78;
-            color: white;
-        }
-
-        .btn-success:hover:not(:disabled) {
-            background-color: #38a169;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
-        }
-
-        /* Export Section */
-        .export-area {
-            text-align: center;
-        }
-
-        .export-area .success-message {
-            color: #38a169;
-            font-size: 1.5em;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        .export-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        /* Hidden elements */
-        .hidden {
-            display: none !important;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .main-wrapper {
-                padding: 15px;
-                gap: 15px;
-            }
-
-            .app-header {
-                flex-direction: column;
-                align-items: flex-start;
-                padding: 15px 20px;
-                gap: 15px;
-            }
-
-            .header-title {
-                font-size: 1.5em;
-                text-align: center;
-                width: 100%;
-            }
-
-            .header-dashboard {
-                justify-content: space-around;
-                width: 100%;
-            }
-
-            .dashboard-item {
-                flex-grow: 1;
-                min-width: unset;
-                padding: 6px 10px;
-            }
-
-            .dashboard-item span {
-                font-size: 0.75em;
-            }
-
-            .dashboard-item strong {
-                font-size: 1em;
-            }
-
-            .header-file-upload {
-                align-items: center;
-                width: 100%;
-            }
-
-            .header-upload-wrapper {
-                padding: 6px 12px;
-            }
-
-            .header-upload-wrapper .upload-text {
-                font-size: 0.8em;
-            }
-
-            .header-file-name, .header-error {
-                text-align: center;
-                width: 100%;
-            }
-
-            .container {
-                padding: 20px;
-                gap: 20px;
-            }
-
-            .section-title {
-                font-size: 1.2em;
-            }
-
-            .current-speaker {
-                font-size: 1.2em;
-            }
-
-            .current-sentence {
-                font-size: 1.4em;
-                padding: 12px;
-            }
-
-            .btn {
-                padding: 10px 20px;
-                font-size: 1em;
-                min-width: unset;
-                flex-grow: 1;
-            }
-
-            .control-buttons, .export-buttons {
-                flex-direction: column;
-                align-items: stretch;
-            }
+            box-sizing: border-box;
         }
     </style>
 </head>
 <body>
-    <div class="main-wrapper">
-        <header class="app-header">
-            <h1 class="header-title">TTS Dataset Recording Studio</h1>
-            <div class="header-dashboard" id="header-dashboard">
-                <div class="dashboard-item">
-                    <span>Total Sentences</span>
-                    <strong id="dashboard-total-sentences">0</strong>
-                </div>
-                <div class="dashboard-item">
-                    <span>Recorded</span>
-                    <strong id="dashboard-recorded-sentences">0</strong>
-                </div>
-                <!-- Dynamic speaker time stats will be added here -->
-            </div>
-            <div class="header-file-upload">
-                <label for="json-file-input" class="file-input-wrapper header-upload-wrapper">
-                    <span class="upload-icon">⬆️</span>
-                    <span class="upload-text">Upload JSON</span>
-                    <input type="file" id="json-file-input" accept=".json">
-                </label>
-                <span id="file-name" class="file-name header-file-name">No file selected</span>
-                <div id="file-error" class="error-message header-error hidden"></div>
-            </div>
-        </header>
-
-        <div class="container">
-            <!-- Recording Section -->
-            <div id="recording-section" class="section hidden">
-                <div class="section-title">Record Audio</div>
-                <div class="recording-area">
-                    <div id="current-speaker" class="current-speaker">Speaker:</div>
-                    <div id="current-sentence" class="current-sentence"></div>
-
-                    <div class="progress-bar-container">
-                        <div id="progress-bar" class="progress-bar"></div>
-                    </div>
-                    <div id="progress-text" class="progress-text">0/0</div>
-
-                    <canvas id="audio-visualizer" class="audio-visualizer"></canvas>
-                    <div id="recording-timer" class="recording-timer hidden">Time: 0.0s / 15s</div>
-
-                    <div class="control-buttons">
-                        <button id="start-record-btn" class="btn btn-primary">Start Recording</button>
-                        <button id="stop-record-btn" class="btn btn-danger" disabled>Stop Recording</button>
-                        <button id="play-record-btn" class="btn btn-secondary" disabled>Play Recording</button>
-                        <!-- Re-record button removed, Start Recording will handle re-recording -->
-                        <button id="accept-record-btn" class="btn btn-success" disabled>Accept</button>
-                        <button id="skip-btn" class="btn btn-secondary" disabled>Skip</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Export Section -->
-            <div id="export-section" class="section hidden">
-                <div class="section-title">Export Recordings</div>
-                <div class="export-area">
-                    <div id="export-success-message" class="success-message hidden">
-                        All sentences recorded! Ready to export.
-                    </div>
-                    <div id="export-buttons" class="export-buttons">
-                        <!-- Export buttons will be dynamically added here based on speakers -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Hidden Audio Player -->
-            <audio id="audio-player" class="hidden"></audio>
-        </div>
-    </div>
+    <div id="root"></div>
 
     <!-- JSZip Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script>
-        // JavaScript will be added here
-        const elements = {
-            // Header elements
-            headerDashboard: document.getElementById('header-dashboard'),
-            dashboardTotalSentences: document.getElementById('dashboard-total-sentences'),
-            dashboardRecordedSentences: document.getElementById('dashboard-recorded-sentences'),
-            jsonFileInput: document.getElementById('json-file-input'),
-            fileNameDisplay: document.getElementById('file-name'),
-            fileError: document.getElementById('file-error'),
+    <script type="text/babel">
+        const {
+            AppBar, Toolbar, Typography, Button, Paper, Grid, LinearProgress, Box,
+            CssBaseline, Container, createTheme, ThemeProvider, IconButton,
+            Dialog, DialogTitle, DialogContent, DialogActions, TextField,
+            Snackbar, Alert
+        } = MaterialUI;
 
-            // Recording section elements
-            recordingSection: document.getElementById('recording-section'),
-            currentSpeakerDisplay: document.getElementById('current-speaker'),
-            currentSentenceDisplay: document.getElementById('current-sentence'),
-            progressBarContainer: document.getElementById('progress-bar-container'),
-            progressBar: document.getElementById('progress-bar'),
-            progressText: document.getElementById('progress-text'),
-            audioVisualizer: document.getElementById('audio-visualizer'),
-            recordingTimerDisplay: document.getElementById('recording-timer'), // New element
-            startRecordBtn: document.getElementById('start-record-btn'),
-            stopRecordBtn: document.getElementById('stop-record-btn'),
-            playRecordBtn: document.getElementById('play-record-btn'),
-            acceptRecordBtn: document.getElementById('accept-record-btn'),
-            skipBtn: document.getElementById('skip-btn'),
-            audioPlayer: document.getElementById('audio-player'),
+        const theme = createTheme({
+            palette: {
+                primary: {
+                    main: '#4299e1', // Tailwind blue-500
+                },
+                secondary: {
+                    main: '#cbd5e0', // Tailwind gray-300
+                },
+                error: {
+                    main: '#e53e3e', // Tailwind red-600
+                },
+                success: {
+                    main: '#48bb78', // Tailwind green-500
+                },
+                background: {
+                    default: '#f0f2f5',
+                    paper: '#fff',
+                },
+            },
+            typography: {
+                h4: {
+                    fontWeight: 700,
+                    color: '#1a202c',
+                },
+                h5: {
+                    fontWeight: 600,
+                    color: '#2d3748',
+                },
+                body1: {
+                    fontSize: '1.1em',
+                },
+            },
+            components: {
+                MuiButton: {
+                    styleOverrides: {
+                        root: {
+                            padding: '12px 25px',
+                            fontSize: '1.1em',
+                            fontWeight: 600,
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)',
+                            minWidth: '120px',
+                            '&:hover': {
+                                transform: 'translateY(-2px)',
+                                boxShadow: '0 6px 15px rgba(0, 0, 0, 0.15)',
+                            },
+                            '&:disabled': {
+                                opacity: 0.6,
+                                boxShadow: 'none',
+                                transform: 'none',
+                            },
+                        },
+                    },
+                },
+                MuiPaper: {
+                    styleOverrides: {
+                        root: {
+                            borderRadius: '12px',
+                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+                            padding: '30px',
+                        },
+                    },
+                },
+            },
+        });
 
-            // Export section elements
-            exportSection: document.getElementById('export-section'),
-            exportSuccessMessage: document.getElementById('export-success-message'),
-            exportButtonsContainer: document.getElementById('export-buttons'),
+        const App = () => {
+            const [conversationData, setConversationData] = React.useState([]);
+            const [currentSentenceIndex, setCurrentSentenceIndex] = React.useState(0);
+            const [speakerRecordings, setSpeakerRecordings] = React.useState({});
+            const [uniqueSpeakers, setUniqueSpeakers] = React.useState(new Set());
+            const [fileName, setFileName] = React.useState('No file selected');
+            const [fileError, setFileError] = React.useState('');
+            const [isRecording, setIsRecording] = React.useState(false);
+            const [recordedBlob, setRecordedBlob] = React.useState(null);
+            const [recordingTime, setRecordingTime] = React.useState(0);
+            const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+            const [snackbarMessage, setSnackbarMessage] = React.useState('');
+            const [snackbarSeverity, setSnackbarSeverity] = React.useState('info');
+
+            const mediaRecorderRef = React.useRef(null);
+            const audioChunksRef = React.useRef([]);
+            const audioStreamRef = React.useRef(null);
+            const audioContextRef = React.useRef(null);
+            const analyserRef = React.useRef(null);
+            const scriptProcessorRef = React.useRef(null);
+            const animationFrameIdRef = React.useRef(null);
+            const recordingTimerIdRef = React.useRef(null);
+            const recordingTimeoutIdRef = React.useRef(null);
+            const audioPlayerRef = React.useRef(null);
+            const audioVisualizerRef = React.useRef(null);
+
+            const MAX_RECORDING_DURATION = 15; // seconds
+            const SAMPLE_RATE = 16000; // Target sample rate for WAV
+            const BIT_DEPTH = 16; // Target bit depth for WAV (16-bit PCM)
+
+            const showSnackbar = (message, severity = 'info') => {
+                setSnackbarMessage(message);
+                setSnackbarSeverity(severity);
+                setSnackbarOpen(true);
+            };
+
+            const handleSnackbarClose = (event, reason) => {
+                if (reason === 'clickaway') {
+                    return;
+                }
+                setSnackbarOpen(false);
+            };
+
+            // --- Utility Functions (adapted for React state) ---
+
+            const updateDashboardStats = React.useCallback(() => {
+                let totalRecorded = 0;
+                let speakerTimes = {};
+
+                uniqueSpeakers.forEach(speaker => {
+                    speakerTimes[speaker] = 0;
+                    if (speakerRecordings[speaker]) {
+                        totalRecorded += speakerRecordings[speaker].length;
+                        speakerRecordings[speaker].forEach(rec => {
+                            speakerTimes[speaker] += rec.duration || 0;
+                        });
+                    }
+                });
+
+                // This would typically update state variables that are then rendered
+                // For now, we'll just log or assume a re-render will pick up changes
+                // if these were part of a larger state object.
+                // For a full React app, these would be state variables.
+                // Example: setDashboardStats({ totalRecorded, speakerTimes });
+            }, [speakerRecordings, uniqueSpeakers]);
+
+            const audioBufferToWav = (audioBuffer) => {
+                const numOfChan = audioBuffer.numberOfChannels;
+                const length = audioBuffer.length * numOfChan;
+                const result = new Float32Array(length);
+                for (let i = 0; i < numOfChan; i++) {
+                    audioBuffer.getChannelData(i).forEach((sample, index) => {
+                        result[index * numOfChan + i] = sample;
+                    });
+                }
+
+                const buffer = new ArrayBuffer(44 + result.length * 2);
+                const view = new DataView(buffer);
+
+                const writeString = (view, offset, string) => {
+                    for (let i = 0; i < string.length; i++) {
+                        view.setUint8(offset + i, string.charCodeAt(i));
+                    }
+                };
+
+                const floatTo16BitPCM = (output, offset, input) => {
+                    for (let i = 0; i < input.length; i++, offset += 2) {
+                        const s = Math.max(-1, Math.min(1, input[i]));
+                        output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+                    }
+                };
+
+                writeString(view, 0, 'RIFF');
+                view.setUint32(4, 36 + result.length * 2, true);
+                writeString(view, 8, 'WAVE');
+                writeString(view, 12, 'fmt ');
+                view.setUint32(16, 16, true);
+                view.setUint16(20, 1, true);
+                view.setUint16(22, numOfChan, true);
+                view.setUint32(24, audioBuffer.sampleRate, true);
+                view.setUint32(28, audioBuffer.sampleRate * numOfChan * (BIT_DEPTH / 8), true);
+                view.setUint16(32, numOfChan * (BIT_DEPTH / 8), true);
+                view.setUint16(34, BIT_DEPTH, true);
+                writeString(view, 36, 'data');
+                view.setUint32(40, result.length * 2, true);
+
+                floatTo16BitPCM(view, 44, result);
+
+                return new Blob([view], { type: 'audio/wav' });
+            };
+
+            const resampleAudioBuffer = async (audioBuffer, targetSampleRate) => {
+                if (audioBuffer.sampleRate === targetSampleRate) {
+                    return audioBuffer;
+                }
+
+                const offlineContext = new OfflineAudioContext(
+                    audioBuffer.numberOfChannels,
+                    audioBuffer.duration * targetSampleRate,
+                    targetSampleRate
+                );
+
+                const source = offlineContext.createBufferSource();
+                source.buffer = audioBuffer;
+                source.connect(offlineContext.destination);
+                source.start(0);
+
+                return offlineContext.startRendering();
+            };
+
+            // --- Core Modules (adapted for React state and refs) ---
+
+            const parseAndValidateJSON = async (jsonString) => {
+                let parsedData;
+                try {
+                    parsedData = JSON.parse(jsonString);
+                } catch (e) {
+                    throw new Error("Invalid JSON format.");
+                }
+
+                let tempConversation = [];
+                if (Array.isArray(parsedData)) {
+                    tempConversation = parsedData;
+                } else if (typeof parsedData === 'object' && parsedData !== null && Array.isArray(parsedData.conversation)) {
+                    tempConversation = parsedData.conversation;
+                } else {
+                    throw new Error("Unsupported JSON structure. Expected an array of objects or an object with a 'conversation' array.");
+                }
+
+                if (tempConversation.length === 0) {
+                    throw new Error("JSON contains no conversation entries.");
+                }
+
+                const newUniqueSpeakers = new Set();
+                for (const entry of tempConversation) {
+                    if (typeof entry.speaker !== 'string' || entry.speaker.trim() === '') {
+                        throw new Error("Each conversation entry must have a non-empty 'speaker' string.");
+                    }
+                    if (typeof entry.text !== 'string' || entry.text.trim() === '') {
+                        throw new Error("Each conversation entry must have a non-empty 'text' string.");
+                    }
+                    newUniqueSpeakers.add(entry.speaker.trim());
+                }
+
+                setConversationData(prevData => {
+                    const startIndex = prevData.length;
+                    const newSentences = tempConversation.map((entry, index) => ({
+                        ...entry,
+                        speaker: entry.speaker.trim(),
+                        text: entry.text.trim(),
+                        id: String(startIndex + index + 1).padStart(4, '0')
+                    }));
+                    return [...prevData, ...newSentences];
+                });
+
+                setUniqueSpeakers(prevSpeakers => {
+                    const updatedSpeakers = new Set(prevSpeakers);
+                    newUniqueSpeakers.forEach(speaker => {
+                        updatedSpeakers.add(speaker);
+                        setSpeakerRecordings(prevRecs => ({
+                            ...prevRecs,
+                            [speaker]: prevRecs[speaker] || []
+                        }));
+                    });
+                    return updatedSpeakers;
+                });
+
+                if (conversationData.length === 0) {
+                    setCurrentSentenceIndex(0);
+                }
+            };
+
+            const handleFileUpload = async (event) => {
+                const file = event.target.files[0];
+                if (!file) {
+                    setFileName('No file selected');
+                    setFileError('');
+                    setConversationData([]);
+                    setCurrentSentenceIndex(0);
+                    setSpeakerRecordings({});
+                    setUniqueSpeakers(new Set());
+                    return;
+                }
+
+                setFileName(file.name);
+                setFileError('');
+
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    try {
+                        const jsonString = e.target.result;
+                        await parseAndValidateJSON(jsonString);
+                        showSnackbar('JSON file loaded successfully!', 'success');
+                    } catch (error) {
+                        console.error("File processing error:", error);
+                        setFileError(`Error parsing JSON: ${error.message}. Please ensure it's a valid JSON file with the correct structure.`);
+                        setConversationData([]);
+                        setCurrentSentenceIndex(0);
+                        setSpeakerRecordings({});
+                        setUniqueSpeakers(new Set());
+                        showSnackbar(`Error loading file: ${error.message}`, 'error');
+                    }
+                };
+                reader.onerror = () => {
+                    setFileError('Failed to read file.');
+                    setConversationData([]);
+                    setCurrentSentenceIndex(0);
+                    setSpeakerRecordings({});
+                    setUniqueSpeakers(new Set());
+                    showSnackbar('Failed to read file.', 'error');
+                };
+                reader.readAsText(file);
+            };
+
+            const startRecording = async () => {
+                // Stop any currently playing audio
+                if (audioPlayerRef.current) {
+                    audioPlayerRef.current.pause();
+                    audioPlayerRef.current.currentTime = 0;
+                }
+
+                audioChunksRef.current = [];
+                setRecordedBlob(null);
+                setRecordingTime(0);
+                setIsRecording(true);
+
+                try {
+                    if (!audioStreamRef.current || !audioStreamRef.current.active) {
+                        audioStreamRef.current = await navigator.mediaDevices.getUserMedia({
+                            audio: {
+                                echoCancellation: true,
+                                noiseSuppression: true,
+                                autoGainControl: false,
+                                sampleRate: SAMPLE_RATE,
+                                channelCount: 1
+                            }
+                        });
+
+                        audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+                        analyserRef.current = audioContextRef.current.createAnalyser();
+                        const microphone = audioContextRef.current.createMediaStreamSource(audioStreamRef.current);
+                        scriptProcessorRef.current = audioContextRef.current.createScriptProcessor(1024, 1, 1);
+
+                        analyserRef.current.fftSize = 1024;
+                        const bufferLength = analyserRef.current.frequencyBinCount;
+                        const dataArray = new Uint8Array(bufferLength);
+
+                        microphone.connect(analyserRef.current);
+                        analyserRef.current.connect(scriptProcessorRef.current);
+                        scriptProcessorRef.current.connect(audioContextRef.current.destination);
+
+                        const canvas = audioVisualizerRef.current;
+                        const canvasCtx = canvas.getContext('2d');
+                        canvas.width = canvas.offsetWidth;
+                        canvas.height = canvas.offsetHeight;
+
+                        const draw = () => {
+                            animationFrameIdRef.current = requestAnimationFrame(draw);
+                            analyserRef.current.getByteTimeDomainData(dataArray);
+                            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+                            canvasCtx.lineWidth = 2;
+                            canvasCtx.strokeStyle = theme.palette.primary.main;
+                            canvasCtx.beginPath();
+
+                            const sliceWidth = canvas.width * 1.0 / bufferLength;
+                            let x = 0;
+
+                            for (let i = 0; i < bufferLength; i++) {
+                                const v = dataArray[i] / 128.0;
+                                const y = v * canvas.height * 0.75;
+
+                                if (i === 0) {
+                                    canvasCtx.moveTo(x, y);
+                                } else {
+                                    canvasCtx.lineTo(x, y);
+                                }
+                                x += sliceWidth;
+                            }
+                            canvasCtx.lineTo(canvas.width, canvas.height / 2);
+                            canvasCtx.stroke();
+                        };
+                        draw();
+                    }
+
+                    mediaRecorderRef.current = new MediaRecorder(audioStreamRef.current, {
+                        mimeType: 'audio/webm;codecs=opus'
+                    });
+
+                    mediaRecorderRef.current.ondataavailable = (event) => {
+                        audioChunksRef.current.push(event.data);
+                    };
+
+                    mediaRecorderRef.current.onstop = () => {
+                        setIsRecording(false);
+                        cancelAnimationFrame(animationFrameIdRef.current);
+                        clearInterval(recordingTimerIdRef.current);
+                        clearTimeout(recordingTimeoutIdRef.current);
+
+                        if (audioStreamRef.current) {
+                            audioStreamRef.current.getTracks().forEach(track => track.stop());
+                            audioStreamRef.current = null;
+                        }
+                        if (audioContextRef.current) {
+                            audioContextRef.current.close();
+                            audioContextRef.current = null;
+                        }
+
+                        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+                        setRecordedBlob(blob);
+                        playRecording(blob); // Play immediately after stop
+                    };
+
+                    mediaRecorderRef.current.start();
+                    const recordingStartTime = Date.now();
+                    recordingTimerIdRef.current = setInterval(() => {
+                        setRecordingTime(((Date.now() - recordingStartTime) / 1000));
+                    }, 100);
+
+                    recordingTimeoutIdRef.current = setTimeout(() => {
+                        stopRecording();
+                        showSnackbar('Recording auto-stopped after 15 seconds.', 'info');
+                    }, MAX_RECORDING_DURATION * 1000);
+
+                } catch (err) {
+                    console.error('Error accessing microphone:', err);
+                    setFileError('Could not access microphone. Please ensure it is connected and permissions are granted.');
+                    setIsRecording(false);
+                    cancelAnimationFrame(animationFrameIdRef.current);
+                    clearInterval(recordingTimerIdRef.current);
+                    clearTimeout(recordingTimeoutIdRef.current);
+                    showSnackbar('Microphone access denied or error.', 'error');
+                }
+            };
+
+            const stopRecording = () => {
+                if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+                    mediaRecorderRef.current.stop();
+                }
+            };
+
+            const playRecording = (blobToPlay = recordedBlob) => {
+                if (blobToPlay) {
+                    const audioUrl = URL.createObjectURL(blobToPlay);
+                    audioPlayerRef.current.src = audioUrl;
+                    audioPlayerRef.current.play();
+                    audioPlayerRef.current.onended = () => {
+                        URL.revokeObjectURL(audioUrl);
+                    };
+                } else {
+                    console.warn("No audio to play.");
+                    showSnackbar('No audio recorded to play.', 'warning');
+                }
+            };
+
+            const acceptRecording = async () => {
+                if (!recordedBlob) {
+                    console.warn("No audio recorded to accept.");
+                    showSnackbar('No audio recorded to accept.', 'warning');
+                    return;
+                }
+
+                const currentEntry = conversationData[currentSentenceIndex];
+
+                try {
+                    const audioBuffer = await new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            const tempAudioContext = new (window.AudioContext || window.webkitAudioContext)();
+                            tempAudioContext.decodeAudioData(e.target.result, resolve, reject);
+                        };
+                        reader.onerror = reject;
+                        reader.readAsArrayBuffer(recordedBlob);
+                    });
+
+                    const resampledBuffer = await resampleAudioBuffer(audioBuffer, SAMPLE_RATE);
+                    const wavBlob = audioBufferToWav(resampledBuffer);
+
+                    const formData = new FormData();
+                    formData.append('speaker_name', currentEntry.speaker);
+                    formData.append('text', currentEntry.text);
+                    formData.append('audio_file', wavBlob, `${currentEntry.id}.wav`);
+
+                    const response = await fetch('/upload-recording', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log('Recording successfully uploaded:', result);
+
+                        setSpeakerRecordings(prevRecs => {
+                            const updatedRecs = { ...prevRecs };
+                            if (!updatedRecs[currentEntry.speaker]) {
+                                updatedRecs[currentEntry.speaker] = [];
+                            }
+                            updatedRecs[currentEntry.speaker].push({
+                                id: currentEntry.id,
+                                blob: wavBlob,
+                                text: currentEntry.text,
+                                duration: resampledBuffer.duration
+                            });
+                            return updatedRecs;
+                        });
+
+                        setCurrentSentenceIndex(prevIndex => prevIndex + 1);
+                        setRecordedBlob(null); // Clear recorded blob after acceptance
+                        showSnackbar('Recording accepted and uploaded!', 'success');
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Failed to upload recording:', errorData);
+                        setFileError(`Upload failed: ${errorData.detail || response.statusText}. Please try again.`);
+                        showSnackbar(`Upload failed: ${errorData.detail || response.statusText}`, 'error');
+                    }
+                } catch (error) {
+                    console.error("Error processing or uploading audio:", error);
+                    setFileError("Failed to process and accept audio. Please try re-recording.");
+                    showSnackbar('Failed to process and accept audio.', 'error');
+                }
+            };
+
+            const skipSentence = () => {
+                setCurrentSentenceIndex(prevIndex => prevIndex + 1);
+                setRecordedBlob(null); // Clear recorded blob on skip
+                showSnackbar('Sentence skipped.', 'info');
+            };
+
+            const generateExportButtons = React.useCallback(() => {
+                return Array.from(uniqueSpeakers).map(speaker => {
+                    const recordingsForSpeaker = speakerRecordings[speaker] || [];
+                    return (
+                        <Button
+                            key={speaker}
+                            variant="contained"
+                            color="primary"
+                            onClick={() => exportSpeakerRecordings(speaker)}
+                            disabled={recordingsForSpeaker.length === 0}
+                            sx={{ m: 1 }}
+                        >
+                            Export {speaker} Recordings
+                        </Button>
+                    );
+                });
+            }, [uniqueSpeakers, speakerRecordings]);
+
+            const exportSpeakerRecordings = async (speakerName) => {
+                const zip = new JSZip();
+                const speakerData = speakerRecordings[speakerName];
+
+                if (!speakerData || speakerData.length === 0) {
+                    showSnackbar(`No recordings found for ${speakerName}.`, 'warning');
+                    return;
+                }
+
+                let txtContent = '';
+                speakerData.forEach(rec => {
+                    txtContent += `${rec.id}|${rec.text}\n`;
+                });
+                zip.file(`${speakerName}.txt`, txtContent);
+
+                const speakerFolder = zip.folder(speakerName);
+                for (const rec of speakerData) {
+                    speakerFolder.file(`${rec.id}.wav`, rec.blob);
+                }
+
+                try {
+                    const zipBlob = await zip.generateAsync({ type: "blob" });
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = URL.createObjectURL(zipBlob);
+                    downloadLink.download = `${speakerName}_tts_dataset.zip`;
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+                    URL.revokeObjectURL(downloadLink.href);
+                    showSnackbar(`Exported ${speakerName} recordings!`, 'success');
+                } catch (error) {
+                    console.error("Error generating ZIP:", error);
+                    showSnackbar("Failed to create ZIP archive. Please try again.", 'error');
+                }
+            };
+
+            // Keyboard shortcuts
+            React.useEffect(() => {
+                const handleKeyPress = (event) => {
+                    if (event.code === 'Space') {
+                        event.preventDefault(); // Prevent scrolling
+                        if (isRecording) {
+                            stopRecording();
+                        } else if (conversationData.length > 0 && currentSentenceIndex < conversationData.length) {
+                            startRecording();
+                        }
+                    } else if (event.code === 'Enter') {
+                        if (recordedBlob && !isRecording) {
+                            acceptRecording();
+                        }
+                    }
+                };
+
+                document.addEventListener('keydown', handleKeyPress);
+                return () => {
+                    document.removeEventListener('keydown', handleKeyPress);
+                };
+            }, [isRecording, recordedBlob, conversationData, currentSentenceIndex]); // Dependencies for effect
+
+            // Update dashboard stats whenever relevant state changes
+            React.useEffect(() => {
+                updateDashboardStats();
+            }, [conversationData, speakerRecordings, uniqueSpeakers, updateDashboardStats]);
+
+            const currentEntry = conversationData[currentSentenceIndex];
+            const progress = conversationData.length > 0 ? (currentSentenceIndex / conversationData.length) * 100 : 0;
+
+            return (
+                <ThemeProvider theme={theme}>
+                    <CssBaseline />
+                    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+                        <AppBar position="static" color="transparent" elevation={0} sx={{ mb: 3 }}>
+                            <Toolbar component={Paper} sx={{ borderRadius: '12px', p: 2, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+                                <Typography variant="h4" component="h1" sx={{ flexGrow: 1, textAlign: { xs: 'center', md: 'left' } }}>
+                                    TTS Dataset Recording Studio
+                                </Typography>
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: { xs: 'center', md: 'flex-start' }, flexGrow: 2 }}>
+                                    <Paper elevation={1} sx={{ p: '8px 12px', textAlign: 'center', minWidth: '100px' }}>
+                                        <Typography variant="caption" display="block" color="text.secondary">Total Sentences</Typography>
+                                        <Typography variant="subtitle1" color="primary.dark">{conversationData.length}</Typography>
+                                    </Paper>
+                                    <Paper elevation={1} sx={{ p: '8px 12px', textAlign: 'center', minWidth: '100px' }}>
+                                        <Typography variant="caption" display="block" color="text.secondary">Recorded</Typography>
+                                        <Typography variant="subtitle1" color="primary.dark">
+                                            {Object.values(speakerRecordings).reduce((acc, val) => acc + val.length, 0)}
+                                        </Typography>
+                                    </Paper>
+                                    {Array.from(uniqueSpeakers).map(speaker => (
+                                        <Paper key={speaker} elevation={1} sx={{ p: '8px 12px', textAlign: 'center', minWidth: '100px' }}>
+                                            <Typography variant="caption" display="block" color="text.secondary">{speaker} Time</Typography>
+                                            <Typography variant="subtitle1" color="primary.dark">
+                                                {(speakerRecordings[speaker] || []).reduce((acc, rec) => acc + rec.duration, 0).toFixed(1)}s
+                                            </Typography>
+                                        </Paper>
+                                    ))}
+                                </Box>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: { xs: 'center', md: 'flex-end' }, gap: 0.5 }}>
+                                    <Button
+                                        variant="outlined"
+                                        component="label"
+                                        startIcon={<MaterialUI.Icon>upload_file</MaterialUI.Icon>}
+                                        sx={{ borderColor: 'secondary.main', bgcolor: 'background.default', '&:hover': { borderColor: 'primary.main', bgcolor: 'primary.light' } }}
+                                    >
+                                        Upload JSON
+                                        <input type="file" hidden accept=".json" onChange={handleFileUpload} />
+                                    </Button>
+                                    <Typography variant="caption" color="text.secondary" sx={{ textAlign: 'right', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        {fileName}
+                                    </Typography>
+                                    {fileError && (
+                                        <Typography variant="caption" color="error.main" sx={{ textAlign: 'right', width: '100%' }}>
+                                            {fileError}
+                                        </Typography>
+                                    )}
+                                </Box>
+                            </Toolbar>
+                        </AppBar>
+
+                        {conversationData.length > 0 && currentSentenceIndex < conversationData.length && (
+                            <Paper sx={{ p: 3, mb: 3 }}>
+                                <Typography variant="h5" sx={{ mb: 2, pb: 1, borderBottom: '2px solid', borderColor: 'divider' }}>
+                                    Record Audio
+                                </Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, alignItems: 'center' }}>
+                                    <Typography variant="h6" color="primary.dark">
+                                        Speaker: {currentEntry.speaker}
+                                    </Typography>
+                                    <Paper variant="outlined" sx={{ p: 2, width: '100%', textAlign: 'center', fontSize: '1.2em', lineHeight: 1.5, bgcolor: 'grey.50' }}>
+                                        {currentEntry.text}
+                                    </Paper>
+
+                                    <Box sx={{ width: '100%', mt: 1 }}>
+                                        <LinearProgress variant="determinate" value={progress} sx={{ height: 15, borderRadius: 10, bgcolor: 'grey.300', '& .MuiLinearProgress-bar': { borderRadius: 10, bgcolor: 'primary.main' } }} />
+                                        <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mt: 0.5 }}>
+                                            {currentSentenceIndex}/{conversationData.length}
+                                        </Typography>
+                                    </Box>
+
+                                    <canvas ref={audioVisualizerRef} style={{ width: '100%', maxWidth: '600px', height: '80px', background: theme.palette.grey[200], borderRadius: '8px', border: `1px solid ${theme.palette.grey[400]}` }}></canvas>
+                                    {isRecording && (
+                                        <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 600 }}>
+                                            Time: {recordingTime.toFixed(1)}s / {MAX_RECORDING_DURATION}s
+                                        </Typography>
+                                    )}
+
+                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1.5, width: '100%' }}>
+                                        <Button
+                                            variant="contained"
+                                            color={isRecording ? "error" : "primary"}
+                                            onClick={isRecording ? stopRecording : startRecording}
+                                            disabled={!conversationData.length || currentSentenceIndex >= conversationData.length}
+                                        >
+                                            {isRecording ? 'Stop Recording' : 'Start Recording'}
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            onClick={() => playRecording()}
+                                            disabled={!recordedBlob || isRecording}
+                                        >
+                                            Play Recording
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="success"
+                                            onClick={acceptRecording}
+                                            disabled={!recordedBlob || isRecording}
+                                        >
+                                            Accept
+                                        </Button>
+                                        <Button
+                                            variant="contained"
+                                            color="secondary"
+                                            onClick={skipSentence}
+                                            disabled={isRecording}
+                                        >
+                                            Skip
+                                        </Button>
+                                    </Box>
+                                </Box>
+                            </Paper>
+                        )}
+
+                        {conversationData.length > 0 && currentSentenceIndex >= conversationData.length && (
+                            <Paper sx={{ p: 3, mb: 3, textAlign: 'center' }}>
+                                <Typography variant="h5" sx={{ mb: 2, pb: 1, borderBottom: '2px solid', borderColor: 'divider' }}>
+                                    Export Recordings
+                                </Typography>
+                                <Typography variant="h6" color="success.main" sx={{ mb: 2 }}>
+                                    All sentences recorded! Ready to export.
+                                </Typography>
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 1.5 }}>
+                                    {generateExportButtons()}
+                                </Box>
+                            </Paper>
+                        )}
+
+                        <audio ref={audioPlayerRef} style={{ display: 'none' }}></audio>
+                    </Container>
+                    <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+                        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                            {snackbarMessage}
+                        </Alert>
+                    </Snackbar>
+                </ThemeProvider>
+            );
         };
 
-        let conversationData = []; // Stores parsed JSON sentences
-        let currentSentenceIndex = 0; // Current sentence being processed
-        // Stores recorded audio Blobs: { 'speaker1': [{id: '0001', blob: Blob, duration: 5.2}, ... ] }
-        let speakerRecordings = {};
-        let uniqueSpeakers = new Set(); // To track unique speakers from JSON
-
-        let mediaRecorder;
-        let audioChunks = []; // Stores raw audio data from MediaRecorder
-        let audioStream; // MediaStream from getUserMedia
-
-        // Web Audio API for visualization and WAV conversion
-        let audioContext;
-        let analyser;
-        let microphone;
-        let scriptProcessor;
-        let animationFrameId; // For audio visualization loop
-
-        let recordingStartTime = 0; // Timestamp when recording starts
-        let recordingTimerId = null; // ID for setInterval for timer display
-        const MAX_RECORDING_DURATION = 15; // seconds
-        let recordingTimeoutId = null; // ID for setTimeout to stop recording
-
-        const SAMPLE_RATE = 16000; // Target sample rate for WAV
-        const BIT_DEPTH = 16; // Target bit depth for WAV (16-bit PCM)
-
-        // --- Utility Functions ---
-
-        /**
-         * Hides an HTML element by adding the 'hidden' class.
-         * @param {HTMLElement} element - The element to hide.
-         */
-        function hideElement(element) {
-            element.classList.add('hidden');
-        }
-
-        /**
-         * Shows an HTML element by removing the 'hidden' class.
-         * @param {HTMLElement} element - The element to show.
-         */
-        function showElement(element) {
-            element.classList.remove('hidden');
-        }
-
-        /**
-         * Displays an error message in the file upload section.
-         * @param {string} message - The error message to display.
-         */
-        function displayFileError(message) {
-            elements.fileError.textContent = message;
-            showElement(elements.fileError);
-            elements.fileNameDisplay.textContent = 'No file selected';
-        }
-
-        /**
-         * Clears any displayed file error message.
-         */
-        function clearFileError() {
-            elements.fileError.textContent = '';
-            hideElement(elements.fileError);
-        }
-
-        /**
-         * Updates the state of the control buttons based on the current recording status.
-         * @param {string} state - 'initial', 'recording', 'recorded', 'export'
-         */
-        function updateButtonStates(state) {
-            elements.startRecordBtn.disabled = true;
-            elements.stopRecordBtn.disabled = true;
-            elements.playRecordBtn.disabled = true;
-            elements.acceptRecordBtn.disabled = true;
-            elements.skipBtn.disabled = true;
-
-            switch (state) {
-                case 'initial':
-                    elements.startRecordBtn.disabled = false;
-                    elements.skipBtn.disabled = false;
-                    break;
-                case 'recording':
-                    elements.stopRecordBtn.disabled = false;
-                    break;
-                case 'recorded':
-                    elements.startRecordBtn.disabled = false; // Allow re-record via start button
-                    elements.playRecordBtn.disabled = false;
-                    elements.acceptRecordBtn.disabled = false;
-                    elements.skipBtn.disabled = false;
-                    break;
-                case 'export':
-                    // All buttons disabled, only export available
-                    break;
-            }
-        }
-
-        /**
-         * Converts an AudioBuffer to a WAV Blob (16-bit PCM).
-         * @param {AudioBuffer} audioBuffer - The AudioBuffer to convert.
-         * @returns {Blob} - The WAV audio Blob.
-         */
-        function audioBufferToWav(audioBuffer) {
-            const numOfChan = audioBuffer.numberOfChannels;
-            const length = audioBuffer.length * numOfChan;
-            const result = new Float32Array(length);
-            // Get interleaved data
-            for (let i = 0; i < numOfChan; i++) {
-                audioBuffer.getChannelData(i).forEach((sample, index) => {
-                    result[index * numOfChan + i] = sample;
-                });
-            }
-
-            // Create a DataView to write the WAV header and data
-            const buffer = new ArrayBuffer(44 + result.length * 2); // 44 bytes for header, 2 bytes per sample (16-bit)
-            const view = new DataView(buffer);
-
-            // WAV header
-            writeString(view, 0, 'RIFF'); // RIFF identifier
-            view.setUint32(4, 36 + result.length * 2, true); // file length - 8
-            writeString(view, 8, 'WAVE'); // RIFF type
-            writeString(view, 12, 'fmt '); // format chunk identifier
-            view.setUint32(16, 16, true); // format chunk length
-            view.setUint16(20, 1, true); // sample format (1 for PCM)
-            view.setUint16(22, numOfChan, true); // number of channels
-            view.setUint32(24, audioBuffer.sampleRate, true); // sample rate
-            view.setUint32(28, audioBuffer.sampleRate * numOfChan * (BIT_DEPTH / 8), true); // byte rate
-            view.setUint16(32, numOfChan * (BIT_DEPTH / 8), true); // block align
-            view.setUint16(34, BIT_DEPTH, true); // bits per sample
-            writeString(view, 36, 'data'); // data chunk identifier
-            view.setUint32(40, result.length * 2, true); // data chunk length
-
-            // Write PCM data
-            floatTo16BitPCM(view, 44, result);
-
-            return new Blob([view], { type: 'audio/wav' });
-        }
-
-        /**
-         * Helper for audioBufferToWav: Writes a string to a DataView.
-         * @param {DataView} view - The DataView to write to.
-         * @param {number} offset - The offset in the DataView.
-         * @param {string} string - The string to write.
-         */
-        function writeString(view, offset, string) {
-            for (let i = 0; i < string.length; i++) {
-                view.setUint8(offset + i, string.charCodeAt(i));
-            }
-        }
-
-        /**
-         * Helper for audioBufferToWav: Converts float samples to 16-bit PCM and writes to DataView.
-         * @param {DataView} output - The DataView to write to.
-         * @param {number} offset - The offset in the DataView.
-         * @param {Float32Array} input - The float array of samples.
-         */
-        function floatTo16BitPCM(output, offset, input) {
-            for (let i = 0; i < input.length; i++, offset += 2) {
-                const s = Math.max(-1, Math.min(1, input[i]));
-                output.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
-            }
-        }
-
-        /**
-         * Resamples an AudioBuffer to a target sample rate.
-         * @param {AudioBuffer} audioBuffer - The source AudioBuffer.
-         * @param {number} targetSampleRate - The desired sample rate.
-         * @returns {Promise<AudioBuffer>} - A promise that resolves with the resampled AudioBuffer.
-         */
-        async function resampleAudioBuffer(audioBuffer, targetSampleRate) {
-            if (audioBuffer.sampleRate === targetSampleRate) {
-                return audioBuffer;
-            }
-
-            const offlineContext = new OfflineAudioContext(
-                audioBuffer.numberOfChannels,
-                audioBuffer.duration * targetSampleRate,
-                targetSampleRate
-            );
-
-            const source = offlineContext.createBufferSource();
-            source.buffer = audioBuffer;
-            source.connect(offlineContext.destination);
-            source.start(0);
-
-            return offlineContext.startRendering();
-        }
-
-        /**
-         * Updates the dashboard statistics.
-         */
-        function updateDashboardStats() {
-            elements.dashboardTotalSentences.textContent = conversationData.length;
-
-            let totalRecorded = 0;
-            let speakerTimes = {};
-
-            uniqueSpeakers.forEach(speaker => {
-                speakerTimes[speaker] = 0;
-                if (speakerRecordings[speaker]) {
-                    totalRecorded += speakerRecordings[speaker].length;
-                    speakerRecordings[speaker].forEach(rec => {
-                        speakerTimes[speaker] += rec.duration || 0; // Add duration if available
-                    });
-                }
-            });
-
-            elements.dashboardRecordedSentences.textContent = totalRecorded;
-
-            // Clear previous dynamic speaker time stats
-            const existingSpeakerTimeItems = elements.headerDashboard.querySelectorAll('.dashboard-item[data-speaker]');
-            existingSpeakerTimeItems.forEach(item => item.remove());
-
-            // Add dynamic speaker time stats
-            uniqueSpeakers.forEach(speaker => {
-                const speakerTimeItem = document.createElement('div');
-                speakerTimeItem.classList.add('dashboard-item');
-                speakerTimeItem.setAttribute('data-speaker', speaker);
-                speakerTimeItem.innerHTML = `
-                    <span>${speaker} Time</span>
-                    <strong>${speakerTimes[speaker].toFixed(1)}s</strong>
-                `;
-                elements.headerDashboard.appendChild(speakerTimeItem);
-            });
-        }
-
-
-        // --- Core Modules ---
-
-        /**
-         * Handles JSON file upload, parsing, and validation.
-         * Displays stats or error messages.
-         * @param {Event} event - The file input change event.
-         */
-        async function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) {
-                elements.fileNameDisplay.textContent = 'No file selected';
-                clearFileError();
-                hideElement(elements.recordingSection);
-                hideElement(elements.exportSection);
-                // Do not clear conversationData, uniqueSpeakers, speakerRecordings here
-                updateDashboardStats(); // Reset dashboard
-                return;
-            }
-
-            elements.fileNameDisplay.textContent = file.name;
-            clearFileError();
-
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const jsonString = e.target.result;
-                    await parseAndValidateJSON(jsonString);
-                    showElement(elements.recordingSection);
-                    updateUI(); // Initialize UI for recording
-                    updateDashboardStats(); // Update dashboard after parsing
-                } catch (error) {
-                    console.error("File processing error:", error);
-                    displayFileError(`Error parsing JSON: ${error.message}. Please ensure it's a valid JSON file with the correct structure.`);
-                    hideElement(elements.recordingSection);
-                    hideElement(elements.exportSection);
-                    // On error, clear the current session data
-                    conversationData = [];
-                    currentSentenceIndex = 0;
-                    speakerRecordings = {};
-                    uniqueSpeakers = new Set();
-                    updateDashboardStats(); // Reset dashboard on error
-                }
-            };
-            reader.onerror = () => {
-                displayFileError('Failed to read file.');
-                hideElement(elements.recordingSection);
-                hideElement(elements.exportSection);
-            };
-            reader.readAsText(file);
-        }
-
-        /**
-         * Parses and validates the uploaded JSON data.
-         * Populates `conversationData` and calculates statistics.
-         * This version appends new data to existing session data.
-         * @param {string} jsonString - The JSON content as a string.
-         * @throws {Error} If the JSON is invalid or has an unsupported structure.
-         */
-        async function parseAndValidateJSON(jsonString) {
-            let parsedData;
-            try {
-                parsedData = JSON.parse(jsonString);
-            } catch (e) {
-                throw new Error("Invalid JSON format.");
-            }
-
-            let tempConversation = [];
-            if (Array.isArray(parsedData)) {
-                tempConversation = parsedData;
-            } else if (typeof parsedData === 'object' && parsedData !== null && Array.isArray(parsedData.conversation)) {
-                tempConversation = parsedData.conversation;
-            } else {
-                throw new Error("Unsupported JSON structure. Expected an array of objects or an object with a 'conversation' array.");
-            }
-
-            if (tempConversation.length === 0) {
-                throw new Error("JSON contains no conversation entries.");
-            }
-
-            const newUniqueSpeakers = new Set();
-            for (const entry of tempConversation) {
-                if (typeof entry.speaker !== 'string' || entry.speaker.trim() === '') {
-                    throw new Error("Each conversation entry must have a non-empty 'speaker' string.");
-                }
-                if (typeof entry.text !== 'string' || entry.text.trim() === '') {
-                    throw new Error("Each conversation entry must have a non-empty 'text' string.");
-                }
-                newUniqueSpeakers.add(entry.speaker.trim());
-            }
-
-            // Append new sentences to existing conversationData
-            const startIndex = conversationData.length;
-            const newSentences = tempConversation.map((entry, index) => ({
-                ...entry,
-                speaker: entry.speaker.trim(),
-                text: entry.text.trim(),
-                id: String(startIndex + index + 1).padStart(4, '0') // Assign unique ID across all loaded sentences
-            }));
-            conversationData.push(...newSentences);
-
-            // Add new speakers to the existing set of unique speakers
-            newUniqueSpeakers.forEach(speaker => {
-                uniqueSpeakers.add(speaker);
-                if (!speakerRecordings[speaker]) {
-                    speakerRecordings[speaker] = []; // Initialize recording array for new speakers
-                }
-            });
-
-            // If this is the first JSON loaded, set currentSentenceIndex to 0
-            if (startIndex === 0) {
-                currentSentenceIndex = 0;
-            }
-            // Otherwise, keep currentSentenceIndex as is, so recording continues from where it left off
-        }
-
-        /**
-         * Updates the UI to show the current sentence, speaker, and progress.
-         * Manages button visibility and state.
-         */
-        function updateUI() {
-            if (currentSentenceIndex >= conversationData.length) {
-                // Session completed
-                showElement(elements.exportSection);
-                showElement(elements.exportSuccessMessage);
-                hideElement(elements.recordingSection);
-                updateButtonStates('export');
-                generateExportButtons();
-                cancelAnimationFrame(animationFrameId); // Stop audio visualization
-                hideElement(elements.recordingTimerDisplay); // Hide timer
-                return;
-            }
-
-            const currentEntry = conversationData[currentSentenceIndex];
-            elements.currentSpeakerDisplay.textContent = `Speaker: ${currentEntry.speaker}`;
-            elements.currentSentenceDisplay.textContent = currentEntry.text;
-
-            const progress = (currentSentenceIndex / conversationData.length) * 100;
-            elements.progressBar.style.width = `${progress}%`;
-            elements.progressText.textContent = `${currentSentenceIndex}/${conversationData.length}`;
-
-            // Reset audio visualizer
-            const canvasCtx = elements.audioVisualizer.getContext('2d');
-            canvasCtx.clearRect(0, 0, elements.audioVisualizer.width, elements.audioVisualizer.height);
-
-            // Reset audio chunks and player
-            audioChunks = [];
-            elements.audioPlayer.src = '';
-
-            // Reset timer display
-            elements.recordingTimerDisplay.textContent = `Time: 0.0s / ${MAX_RECORDING_DURATION}s`;
-            hideElement(elements.recordingTimerDisplay); // Hide timer when not recording
-
-            updateButtonStates('initial'); // Set buttons to initial state for new sentence
-        }
-
-        /**
-         * Starts the audio recording process.
-         * Requests microphone access and initializes MediaRecorder.
-         */
-        async function startRecording() {
-            // Clear previous recording if any, for re-recording the current sentence
-            audioChunks = [];
-            elements.audioPlayer.src = '';
-            elements.recordingTimerDisplay.textContent = `Time: 0.0s / ${MAX_RECORDING_DURATION}s`;
-            showElement(elements.recordingTimerDisplay);
-
-            try {
-                // Only request media stream if not already active
-                if (!audioStream || !audioStream.active) {
-                    audioStream = await navigator.mediaDevices.getUserMedia({
-                        audio: {
-                            echoCancellation: true,
-                            noiseSuppression: true,
-                            autoGainControl: false,
-                            sampleRate: SAMPLE_RATE, // Request target sample rate
-                            channelCount: 1 // Request mono
-                        }
-                    });
-
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    analyser = audioContext.createAnalyser();
-                    microphone = audioContext.createMediaStreamSource(audioStream);
-                    scriptProcessor = audioContext.createScriptProcessor(1024, 1, 1); // Buffer size, input channels, output channels
-
-                    analyser.fftSize = 1024;
-                    const bufferLength = analyser.frequencyBinCount;
-                    const dataArray = new Uint8Array(bufferLength);
-
-                    microphone.connect(analyser);
-                    analyser.connect(scriptProcessor);
-                    scriptProcessor.connect(audioContext.destination); // Connect to destination to ensure onaudioprocess fires
-
-                    // Audio visualization loop
-                    const canvas = elements.audioVisualizer;
-                    const canvasCtx = canvas.getContext('2d');
-                    canvas.width = canvas.offsetWidth; // Set canvas width to its CSS width
-                    canvas.height = canvas.offsetHeight; // Set canvas height to its CSS height
-
-                    const draw = () => {
-                        animationFrameId = requestAnimationFrame(draw);
-
-                        analyser.getByteTimeDomainData(dataArray); // Get waveform data
-
-                        canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
-                        canvasCtx.lineWidth = 2;
-                        canvasCtx.strokeStyle = 'rgb(66, 153, 225)'; /* Tailwind blue-500 */
-                        canvasCtx.beginPath();
-
-                        const sliceWidth = canvas.width * 1.0 / bufferLength;
-                        let x = 0;
-
-                        for (let i = 0; i < bufferLength; i++) {
-                            const v = dataArray[i] / 128.0; // Normalize to 0-2
-                            const y = v * canvas.height * 0.75; // Map to canvas height, increased sensitivity
-
-                            if (i === 0) {
-                                canvasCtx.moveTo(x, y);
-                            } else {
-                                canvasCtx.lineTo(x, y);
-                            }
-                            x += sliceWidth;
-                        }
-
-                        canvasCtx.lineTo(canvas.width, canvas.height / 2);
-                        canvasCtx.stroke();
-                    };
-                    draw();
-                }
-
-
-                // MediaRecorder setup
-                mediaRecorder = new MediaRecorder(audioStream, {
-                    mimeType: 'audio/webm;codecs=opus' // Common and widely supported format
-                });
-
-                audioChunks = [];
-                mediaRecorder.ondataavailable = (event) => {
-                    audioChunks.push(event.data);
-                };
-
-                mediaRecorder.onstop = () => {
-                    // Stop visualization and clear timers
-                    cancelAnimationFrame(animationFrameId);
-                    clearInterval(recordingTimerId);
-                    clearTimeout(recordingTimeoutId);
-                    hideElement(elements.recordingTimerDisplay);
-
-                    // Explicitly stop audio stream tracks and close audio context
-                    if (audioStream) {
-                        audioStream.getTracks().forEach(track => track.stop());
-                        audioStream = null; // Clear the stream reference
-                    }
-                    if (audioContext) {
-                        audioContext.close();
-                        audioContext = null; // Clear the context reference
-                    }
-
-                    updateButtonStates('recorded');
-                };
-
-                mediaRecorder.start();
-                updateButtonStates('recording');
-
-                // Start recording timer and timeout
-                recordingStartTime = Date.now();
-                recordingTimerId = setInterval(() => {
-                    const elapsedTime = (Date.now() - recordingStartTime) / 1000;
-                    elements.recordingTimerDisplay.textContent = `Time: ${elapsedTime.toFixed(1)}s / ${MAX_RECORDING_DURATION}s`;
-                }, 100); // Update every 100ms
-
-                recordingTimeoutId = setTimeout(() => {
-                    stopRecording();
-                    elements.recordingTimerDisplay.textContent = `Time: ${MAX_RECORDING_DURATION.toFixed(1)}s / ${MAX_RECORDING_DURATION}s (Auto-stopped)`;
-                }, MAX_RECORDING_DURATION * 1000);
-
-            } catch (err) {
-                console.error('Error accessing microphone:', err);
-                displayFileError('Could not access microphone. Please ensure it is connected and permissions are granted.');
-                updateButtonStates('initial'); // Revert buttons
-                hideElement(elements.recordingTimerDisplay); // Hide timer on error
-                clearInterval(recordingTimerId);
-                clearTimeout(recordingTimeoutId);
-            }
-        }
-
-        /**
-         * Stops the current audio recording.
-         */
-        function stopRecording() {
-            if (mediaRecorder && mediaRecorder.state === 'recording') {
-                mediaRecorder.stop();
-            }
-        }
-
-        /**
-         * Plays back the most recently recorded audio.
-         */
-        function playRecording() {
-            if (audioChunks.length > 0) {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                elements.audioPlayer.src = URL.createObjectURL(audioBlob);
-                elements.audioPlayer.play();
-            } else {
-                console.warn("No audio to play.");
-            }
-        }
-
-        /**
-         * Accepts the current recording, converts it to WAV, and stores it.
-         * Moves to the next sentence.
-         */
-        async function acceptRecording() {
-            if (audioChunks.length === 0) {
-                console.warn("No audio recorded to accept.");
-                return;
-            }
-
-            const currentEntry = conversationData[currentSentenceIndex];
-            const originalAudioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-
-            try {
-                // Decode the recorded audio Blob
-                const audioBuffer = await new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        const tempAudioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        tempAudioContext.decodeAudioData(e.target.result, resolve, reject);
-                    };
-                    reader.onerror = reject;
-                    reader.readAsArrayBuffer(originalAudioBlob);
-                });
-
-                // Resample if necessary
-                const resampledBuffer = await resampleAudioBuffer(audioBuffer, SAMPLE_RATE);
-
-                // Convert to WAV
-                const wavBlob = audioBufferToWav(resampledBuffer);
-
-                // Store the WAV Blob with its duration
-                if (!speakerRecordings[currentEntry.speaker]) {
-                    speakerRecordings[currentEntry.speaker] = [];
-                }
-                // Send to backend
-                const formData = new FormData();
-                formData.append('speaker_name', currentEntry.speaker);
-                formData.append('text', currentEntry.text);
-                formData.append('audio_file', wavBlob, `${currentEntry.id}.wav`);
-
-                const response = await fetch('/upload-recording', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                if (response.ok) {
-                    const result = await response.json();
-                    console.log('Recording successfully uploaded:', result);
-
-                    // Store the WAV Blob with its duration locally for dashboard/export
-                    if (!speakerRecordings[currentEntry.speaker]) {
-                        speakerRecordings[currentEntry.speaker] = [];
-                    }
-                    speakerRecordings[currentEntry.speaker].push({
-                        id: currentEntry.id,
-                        blob: wavBlob,
-                        text: currentEntry.text,
-                        duration: resampledBuffer.duration // Store duration for dashboard
-                    });
-
-                    currentSentenceIndex++;
-                    updateDashboardStats(); // Update dashboard after accepting
-                    updateUI(); // Move to next sentence or export screen
-                } else {
-                    const errorData = await response.json();
-                    console.error('Failed to upload recording:', errorData);
-                    displayFileError(`Upload failed: ${errorData.detail || response.statusText}. Please try again.`);
-                    updateButtonStates('recorded'); // Stay in recorded state for re-record
-                }
-            } catch (error) {
-                console.error("Error processing or uploading audio:", error);
-                displayFileError("Failed to process and accept audio. Please try re-recording.");
-                updateButtonStates('recorded'); // Stay in recorded state for re-record
-            }
-        }
-
-        /**
-         * Skips the current sentence without recording and moves to the next.
-         */
-        function skipSentence() {
-            currentSentenceIndex++;
-            updateUI();
-        }
-
-        /**
-         * Generates the download buttons for each speaker in the export section.
-         */
-        function generateExportButtons() {
-            elements.exportButtonsContainer.innerHTML = ''; // Clear previous buttons
-
-            uniqueSpeakers.forEach(speaker => {
-                const recordingsForSpeaker = speakerRecordings[speaker];
-                const btn = document.createElement('button');
-                btn.classList.add('btn', 'btn-primary');
-                btn.textContent = `Export ${speaker} Recordings`;
-                btn.disabled = recordingsForSpeaker.length === 0;
-                btn.onclick = () => exportSpeakerRecordings(speaker);
-                elements.exportButtonsContainer.appendChild(btn);
-            });
-        }
-
-        /**
-         * Exports recordings for a specific speaker as a ZIP archive.
-         * @param {string} speakerName - The name of the speaker to export.
-         */
-        async function exportSpeakerRecordings(speakerName) {
-            const zip = new JSZip();
-            const speakerData = speakerRecordings[speakerName];
-
-            if (!speakerData || speakerData.length === 0) {
-                // Replace with custom modal later if needed
-                alert(`No recordings found for ${speakerName}.`);
-                return;
-            }
-
-            // Create speakerX.txt
-            let txtContent = '';
-            speakerData.forEach(rec => {
-                txtContent += `${rec.id}|${rec.text}\n`;
-            });
-            zip.file(`${speakerName}.txt`, txtContent);
-
-            // Create speakerX/ directory and add WAV files
-            const speakerFolder = zip.folder(speakerName);
-            for (const rec of speakerData) {
-                speakerFolder.file(`${rec.id}.wav`, rec.blob);
-            }
-
-            try {
-                const zipBlob = await zip.generateAsync({ type: "blob" });
-                const downloadLink = document.createElement('a');
-                downloadLink.href = URL.createObjectURL(zipBlob);
-                downloadLink.download = `${speakerName}_tts_dataset.zip`;
-                document.body.appendChild(downloadLink);
-                downloadLink.click();
-                document.body.removeChild(downloadLink);
-                URL.revokeObjectURL(downloadLink.href);
-            } catch (error) {
-                console.error("Error generating ZIP:", error);
-                // Replace with custom modal later if needed
-                alert("Failed to create ZIP archive. Please try again.");
-            }
-        }
-
-        // --- Event Listeners and Initialization ---
-        function init() {
-            elements.jsonFileInput.addEventListener('change', handleFileUpload);
-            elements.startRecordBtn.addEventListener('click', startRecording);
-            elements.stopRecordBtn.addEventListener('click', stopRecording);
-            elements.playRecordBtn.addEventListener('click', playRecording);
-            // elements.reRecordBtn.addEventListener('click', reRecord); // Removed
-            elements.acceptRecordBtn.addEventListener('click', acceptRecording);
-            elements.skipBtn.addEventListener('click', skipSentence);
-
-            // Initial UI state
-            hideElement(elements.recordingSection);
-            hideElement(elements.exportSection);
-            clearFileError();
-            updateButtonStates('initial'); // Ensure buttons are in correct initial state
-            updateDashboardStats(); // Initialize dashboard with 0s
-            hideElement(elements.recordingTimerDisplay); // Ensure timer is hidden initially
-
-            // Set canvas dimensions based on CSS
-            const canvas = elements.audioVisualizer;
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-        }
-
-        // Initialize the app when the DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', init);
+        ReactDOM.render(<App />, document.getElementById('root'));
     </script>
 </body>
 </html>
